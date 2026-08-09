@@ -1,0 +1,8 @@
+{
+  "apps/backend": "0.1.0",
+  "apps/web": "0.1.0",
+  "apps/extension": "0.1.0",
+  "packages/shared-utils": "0.1.0",
+  "packages/shared-models": "0.1.0",
+  "packages/shared-ui": "0.1.0"
+}

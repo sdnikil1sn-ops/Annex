@@ -1,0 +1,10 @@
+main {
+  max-width: 720px;
+  margin: 0 auto;
+  color: #1b2a41;
+}
+
+h1 {
+  color: #1b5e8a;
+  margin-bottom: 0.25rem;
+}

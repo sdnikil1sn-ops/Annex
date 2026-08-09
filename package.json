@@ -1,0 +1,16 @@
+{
+  "name": "annex",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ANNEX — Learn Before You Believe. AI-powered media & information literacy platform.",
+  "packageManager": "pnpm@10.0.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "lint": "pnpm -r lint",
+    "build": "pnpm -r build",
+    "test": "pnpm --filter \"@annex/*\" test",
+    "format:check": "pnpm -r format:check"
+  }
+}

@@ -1,0 +1,59 @@
+# ---- OS / Editors ----
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+*.code-workspace
+
+# ---- Secrets & Local Env ----
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# ---- Node / pnpm ----
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+.pnpm-store/
+vite.config.ts.timestamp-*
+
+# ---- Flutter / Dart (apps/mobile has its own generated .gitignore too) ----
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+build/
+*.iml
+**/ios/Flutter/.last_build_id
+**/ios/Pods/
+**/android/.gradle/
+**/android/local.properties
+**/android/app/debug/
+**/android/app/profile/
+**/android/app/release/
+
+# ---- Logs ----
+*.log
+# ---- Local secrets (Firebase service account, etc.) ----
+secrets/
+
+# Local secrets
+secrets/

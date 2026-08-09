@@ -1,0 +1,51 @@
+# Local development stack for ANNEX. Production targets Supabase/Cloud Run.
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: annex
+      POSTGRES_PASSWORD: annex
+      POSTGRES_DB: annex
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U annex"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  api:
+    build: ./apps/backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://annex:annex@postgres:5432/annex
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+  worker:
+    build: ./apps/backend
+    command: celery -A app.infra.celery_app worker --loglevel=INFO
+    environment:
+      DATABASE_URL: postgresql+psycopg://annex:annex@postgres:5432/annex
+      REDIS_URL: redis://redis:6379/0
+    depends_on:
+      redis:
+        condition: service_started
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,42 @@
+"""add unique constraint to collection_items
+
+Revision ID: 0004
+Revises: 0003
+Create Date: 2026-08-07 00:00:00.000000
+"""
+
+import sqlalchemy as sa
+from alembic import op
+
+revision = "0004"
+down_revision = "0003"
+branch_labels = None
+depends_on = None
+
+
+def upgrade() -> None:
+    """Add a DB-level unique constraint on collection_items.
+
+    Deduplicates first: if any duplicate (collection_id, analysis_id) rows
+    already exist (e.g. from earlier test runs), the constraint creation
+    would fail without this cleanup.
+    """
+    op.execute(
+        """
+        DELETE FROM collection_items a
+        USING collection_items b
+        WHERE a.id > b.id
+          AND a.collection_id = b.collection_id
+          AND a.analysis_id = b.analysis_id
+        """
+    )
+    op.create_unique_constraint(
+        "uq_collection_item",
+        "collection_items",
+        ["collection_id", "analysis_id"],
+    )
+
+
+def downgrade() -> None:
+    """Remove the unique constraint."""
+    op.drop_constraint("uq_collection_item", "collection_items", type_="unique")

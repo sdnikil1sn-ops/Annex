@@ -1,0 +1,20 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "packages": {
+    "apps/backend": {
+      "release-type": "python",
+      "package-name": "annex-backend",
+      "changelog-sections": [
+        { "type": "feat", "section": "Features" },
+        { "type": "fix", "section": "Bug Fixes" },
+        { "type": "chore", "section": "Miscellaneous" },
+        { "type": "docs", "section": "Documentation" }
+      ]
+    },
+    "apps/web": { "release-type": "node", "package-name": "annex-web" },
+    "apps/extension": { "release-type": "node", "package-name": "annex-extension" },
+    "packages/shared-utils": { "release-type": "node", "package-name": "@annex/shared-utils" },
+    "packages/shared-models": { "release-type": "node", "package-name": "@annex/shared-models" },
+    "packages/shared-ui": { "release-type": "node", "package-name": "@annex/shared-ui" }
+  }
+}
