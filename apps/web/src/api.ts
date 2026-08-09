@@ -15,7 +15,8 @@ api.interceptors.request.use(async (config) => {
   return config
 })
 
-// API types (mirror the backend schemas — will refine as pages are built).
+// --- Types (mirror the backend schemas) ---
+
 export type AnalysisStatus = 'pending' | 'processing' | 'completed' | 'failed'
 export type AnalysisType = 'text' | 'url' | 'image' | 'video' | 'voice'
 
@@ -56,4 +57,34 @@ export interface Evidence {
 export interface MediaUploadResponse {
   path: string
   url: string
+}
+
+export interface CreateAnalysisInput {
+  type: AnalysisType
+  title?: string
+  input_payload: Record<string, unknown>
+}
+
+// --- API calls ---
+
+export async function createAnalysis(input: CreateAnalysisInput): Promise<Analysis> {
+  const { data } = await api.post<Analysis>('/analyses', input)
+  return data
+}
+
+export async function listAnalyses(): Promise<Analysis[]> {
+  const { data } = await api.get<Analysis[] | { items: Analysis[] }>('/analyses')
+  return Array.isArray(data) ? data : (data.items ?? [])
+}
+
+export async function getAnalysis(id: string): Promise<Analysis> {
+  const { data } = await api.get<Analysis>(`/analyses/${id}`)
+  return data
+}
+
+export async function uploadMedia(file: File): Promise<MediaUploadResponse> {
+  const form = new FormData()
+  form.append('file', file)
+  const { data } = await api.post<MediaUploadResponse>('/media/upload', form)
+  return data
 }
