@@ -57,3 +57,6 @@ secrets/
 
 # Local secrets
 secrets/
+
+firebase-service-account.json
+firebase-adminsdk-*.json

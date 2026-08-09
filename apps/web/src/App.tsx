@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './auth/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
 import LoginPage from './pages/LoginPage'
 import DashboardPage from './pages/DashboardPage'
+import AnalysisDetailPage from './pages/AnalysisDetailPage'
 
 function Shell() {
   const { user, signOut } = useAuth()
@@ -39,7 +40,7 @@ function Shell() {
             path="/analyses/:id"
             element={
               <ProtectedRoute>
-                <p className="text-slate-600">Analysis detail — coming in Milestone 4.</p>
+                <AnalysisDetailPage />
               </ProtectedRoute>
             }
           />
