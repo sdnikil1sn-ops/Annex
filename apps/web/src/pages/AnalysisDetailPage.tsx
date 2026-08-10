@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import { getAnalysis, type Claim } from '../api'
+import Skeleton from '../components/Skeleton'
 
 const STATUS_LABEL: Record<string, string> = {
   pending: 'Queued…',
@@ -89,7 +90,15 @@ export default function AnalysisDetailPage() {
   })
 
   if (isLoading) {
-    return <p className="text-sm text-slate-500">Loading…</p>
+    return (
+      <div className="space-y-4">
+        <Skeleton className="h-4 w-32" />
+        <Skeleton className="h-8 w-48" />
+        <Skeleton className="h-24 w-full" />
+        <Skeleton className="h-32 w-full" />
+        <Skeleton className="h-32 w-full" />
+      </div>
+    )
   }
 
   if (isError || !analysis) {

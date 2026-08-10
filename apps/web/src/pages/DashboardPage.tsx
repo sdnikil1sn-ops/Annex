@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate } from 'react-router-dom'
 import { createAnalysis, listAnalyses, uploadMedia, type Analysis } from '../api'
+import Skeleton from '../components/Skeleton'
 
 type Tab = 'text' | 'image' | 'audio' | 'video'
 
@@ -36,7 +37,12 @@ export default function DashboardPage() {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState('')
 
-  const { data: analyses, isLoading } = useQuery({
+  const {
+    data: analyses,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
     queryKey: ['analyses'],
     queryFn: listAnalyses,
   })
@@ -76,9 +82,10 @@ export default function DashboardPage() {
     mutation.mutate()
   }
 
+  const canSubmit = mutation.isPending || (tab === 'text' ? !text.trim() : !file)
+
   return (
     <div className="space-y-10">
-      {/* Composer */}
       <section>
         <h2 className="mb-3 text-xl font-semibold text-slate-900">New analysis</h2>
         <div className="mb-4 flex gap-2">
@@ -128,7 +135,7 @@ export default function DashboardPage() {
 
           <button
             type="submit"
-            disabled={mutation.isPending}
+            disabled={canSubmit}
             className="rounded-lg bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
           >
             {mutation.isPending ? 'Analyzing…' : 'Analyze'}
@@ -136,11 +143,26 @@ export default function DashboardPage() {
         </form>
       </section>
 
-      {/* Recent analyses */}
       <section>
         <h2 className="mb-3 text-xl font-semibold text-slate-900">Recent analyses</h2>
+
         {isLoading ? (
-          <p className="text-sm text-slate-500">Loading…</p>
+          <div className="space-y-2">
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+            <Skeleton className="h-14 w-full" />
+          </div>
+        ) : isError ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+            <p>Could not load your analyses.</p>
+            <button
+              type="button"
+              onClick={() => refetch()}
+              className="mt-2 rounded-md border border-red-300 px-3 py-1 hover:bg-red-100"
+            >
+              Retry
+            </button>
+          </div>
         ) : analyses && analyses.length > 0 ? (
           <ul className="divide-y rounded-xl border bg-white shadow-sm">
             {analyses.map((a) => (
