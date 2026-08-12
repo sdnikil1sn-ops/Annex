@@ -13,4 +13,4 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY apps/backend/ .
 
 # Run migrations, then start the API on Render's $PORT
-CMD ["sh", "-c", "uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
+CMD ["sh", "-c", "echo \"DB URL = $DATABASE_URL\"; uv run alembic upgrade head && uv run uvicorn app.main:app --host 0.0.0.0 --port $PORT"]
