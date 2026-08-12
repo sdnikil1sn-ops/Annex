@@ -7,6 +7,7 @@ from firebase_admin import auth as firebase_auth
 from firebase_admin import credentials
 
 from app.core.config import get_settings
+from app.core.errors import UnauthorizedError
 
 
 def _ensure_firebase() -> None:
@@ -33,5 +34,8 @@ class FirebaseIdTokenVerifier:
     def verify(self, token: str) -> dict[str, Any]:
         """Return verified token claims for a raw Firebase ID token."""
         _ensure_firebase()
-        decoded = firebase_auth.verify_id_token(token)
+        try:
+            decoded = firebase_auth.verify_id_token(token)
+        except ValueError as exc:
+            raise UnauthorizedError("Invalid or expired token.") from exc
         return dict(decoded)
