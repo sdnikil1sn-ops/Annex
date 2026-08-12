@@ -74,6 +74,12 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-4o-mini"
     openai_base_url: str | None = None
     analysis_run_async: bool = True
+    
+    # Groq fallback (free tier) — used when the primary LLM is rate-limited
+    groq_api_key: str = ""
+    groq_model: str = "llama-3.3-70b-versatile"
+    groq_vision_model: str = "llama-3.2-11b-vision-preview"
+
 
     exa_api_key: str = ""
 

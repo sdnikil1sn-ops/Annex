@@ -1,9 +1,10 @@
 """Analysis pipeline orchestration (pure logic, DI-friendly)."""
 
 import structlog
+from openai import RateLimitError
 from pydantic import TypeAdapter, ValidationError
 from sqlalchemy.orm import Session
-from tenacity import retry, retry_if_exception_type, stop_after_attempt
+from tenacity import retry, retry_if_exception_type, stop_after_attempt, wait_exponential
 
 from app.infra.llm import LLMClient
 from app.infra.search import SearchClient
@@ -32,6 +33,8 @@ VERIFICATION_SYSTEM = (
 _claims_adapter = TypeAdapter(LLMClaimExtraction)
 _verification_adapter = TypeAdapter(LLMVerification)
 
+_RETRYABLE_ERRORS = (ValidationError, RateLimitError)
+
 
 class AnalysisPipelineService:
     """Extracts, verifies, and persists claims for one analysis."""
@@ -44,13 +47,20 @@ class AnalysisPipelineService:
         self._search = search
 
     @retry(
-        retry=retry_if_exception_type(ValidationError),
-        stop=stop_after_attempt(3),
+        retry=retry_if_exception_type(_RETRYABLE_ERRORS),
+        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=2, min=5, max=60),
         reraise=True,
     )
     def _extract(self, text: str) -> LLMClaimExtraction:
         return _claims_adapter.validate_json(self._llm.complete_json(EXTRACTION_SYSTEM, text))
 
+    @retry(
+        retry=retry_if_exception_type(_RETRYABLE_ERRORS),
+        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=2, min=5, max=60),
+        reraise=True,
+    )
     def _extract_image(self, image_url: str) -> LLMClaimExtraction:
         return _claims_adapter.validate_json(
             self._llm.complete_vision(
@@ -61,6 +71,12 @@ class AnalysisPipelineService:
             )
         )
 
+    @retry(
+        retry=retry_if_exception_type(_RETRYABLE_ERRORS),
+        stop=stop_after_attempt(4),
+        wait=wait_exponential(multiplier=2, min=5, max=60),
+        reraise=True,
+    )
     def _verify(self, claim_text: str) -> LLMVerification:
         candidates = self._search.find_sources(claim_text)
         evidence_lines: list[str] = []
