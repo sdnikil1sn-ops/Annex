@@ -36,6 +36,6 @@ class FirebaseIdTokenVerifier:
         _ensure_firebase()
         try:
             decoded = firebase_auth.verify_id_token(token)
-        except ValueError as exc:
+        except Exception as exc:
             raise UnauthorizedError("Invalid or expired token.") from exc
         return dict(decoded)
